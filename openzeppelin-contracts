@@ -1,0 +1,31 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.7;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "base64-sol/base64.sol";
+contract ImageNFT is ERC721URIStorage, Ownable {
+    uint256 public tokenCounter;
+    constructor() ERC721("favicon", "favicon")
+    {
+        tokenCounter = 0;
+    }
+    function create(string memory base64String) public {
+        _safeMint(msg.sender, tokenCounter);
+        string memory base64Encoded = string(abi.encodePacked(base64String));
+        string memory imageURI = string(abi.encodePacked("data:image/x-icon;base64,",base64Encoded));
+        string memory tokenURI = string(
+                abi.encodePacked(
+                    "data:application/json;base64,",
+                    Base64.encode(
+                        bytes(
+                            abi.encodePacked(
+                                '{"name":","favicon","description":"favicon", "attributes":"", "image":"',imageURI,'"}'
+                            )
+                        )
+                    )
+                )
+            );
+        _setTokenURI(tokenCounter, tokenURI);
+        tokenCounter = tokenCounter + 1;
+    }
+}
